@@ -16,7 +16,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if mode == MODE_AGENT:
         ha_conversation.async_set_agent(hass, entry, DuckConversationAgent(hass, entry))
     else:
-        llm.async_register_api(hass, DuckSearchAPI(hass, entry))
+        entry.async_on_unload(
+            llm.async_register_api(hass, DuckSearchAPI(hass, entry))
+        )
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
     return True
 
@@ -26,8 +28,7 @@ async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> Non
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if entry.data.get(CONF_MODE, MODE_TOOL) == MODE_AGENT:
         ha_conversation.async_unset_agent(hass, entry)
-    else:
-        llm.async_unregister_api(hass, f"{DOMAIN}_{entry.entry_id}")
+    entry.async_unload()
     return True
 
 class DuckSearchAPI(llm.API):
