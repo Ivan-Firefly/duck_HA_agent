@@ -9,6 +9,7 @@ import aiohttp
 from homeassistant.components import conversation
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.const import MATCH_ALL
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers import intent
 
@@ -27,8 +28,8 @@ class DuckConversationAgent(conversation.AbstractConversationAgent):
         self._histories: dict[str, list[dict[str, str]]] = {}
 
     @property
-    def supported_languages(self) -> list[str]:
-        return ["*"]
+    def supported_languages(self) -> str:
+        return MATCH_ALL
 
     async def async_process(self, user_input: conversation.ConversationInput) -> conversation.ConversationResult:
         conversation_id = user_input.conversation_id or uuid.uuid4().hex
