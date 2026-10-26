@@ -1,0 +1,10 @@
+{
+  "config": {
+    "step": {
+      "user": {"title": "Duck.ai", "description": "Choose an independent integration mode and enter the Duck.ai bridge URL.", "data": {"mode": "Integration mode", "url": "Bridge URL"}},
+      "model": {"title": "Choose Duck.ai model", "data": {"model": "Model"}}
+    },
+    "error": {"cannot_connect": "Cannot connect to Duck.ai bridge", "no_models": "No available models", "invalid_model": "Invalid model"}
+  },
+  "options": {"step": {"init": {"title": "Duck.ai settings", "data": {"model": "Model", "system_prompt": "System prompt"}}}}
+}
