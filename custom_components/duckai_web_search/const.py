@@ -1,0 +1,8 @@
+DOMAIN = "duckai_web_search"
+CONF_URL = "url"
+CONF_MODEL = "model"
+CONF_PROMPT = "system_prompt"
+DEFAULT_PROMPT = "Ты полезный голосовой ассистент Home Assistant. Отвечай на языке пользователя, кратко и точно. Не утверждай, что управлял устройствами, если не выполнял никаких действий."
+CONF_MODE = "mode"
+MODE_TOOL = "tool"
+MODE_AGENT = "agent"
