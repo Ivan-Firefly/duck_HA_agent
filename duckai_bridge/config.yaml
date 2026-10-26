@@ -1,0 +1,18 @@
+name: Duck.ai Bridge
+version: "2.2.0"
+slug: duckai_bridge
+description: Duck.ai HTTP bridge for the Duck.ai Home Assistant custom integration
+url: https://github.com/golaso024/headless-duckapi
+arch:
+  - amd64
+  - aarch64
+  - armv7
+init: false
+startup: services
+boot: auto
+ports:
+  8787/tcp: 8787
+ports_description:
+  8787/tcp: Duck.ai HTTP bridge
+options: {}
+schema: {}
