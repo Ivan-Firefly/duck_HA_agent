@@ -1,0 +1,58 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Duck.ai",
+        "description": "Что настроить? Это независимые настройки.",
+        "menu_options": {
+          "tools": "Tool calling (web_search для других агентов)",
+          "agent": "Собственный Conversation agent"
+        }
+      },
+      "bridge": {
+        "title": "Duck.ai Bridge",
+        "description": "Адрес Bridge (аддон или Docker) для загрузки моделей.",
+        "data": {
+          "url": "Bridge URL (IP:порт)"
+        }
+      },
+      "tools_settings": {
+        "title": "Tool calling: модель",
+        "description": "LLM API «Duck.ai Web Search» станет доступен в настройках других агентов (OpenAI, Google, Ollama…).",
+        "data": {
+          "model": "Модель"
+        }
+      },
+      "agent_settings": {
+        "title": "Conversation agent",
+        "description": "Запросы идут напрямую в Duck.ai.",
+        "data": {
+          "name": "Название",
+          "model": "Модель",
+          "system_prompt": "Системный промпт",
+          "web_search": "Веб-поиск Duck.ai"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не удалось подключиться к Bridge",
+      "no_models": "Bridge не вернул моделей",
+      "invalid_model": "Выбранная модель недоступна"
+    },
+    "abort": {
+      "already_configured": "Tool calling уже настроен"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Настройки Duck.ai",
+        "data": {
+          "model": "Модель",
+          "system_prompt": "Системный промпт",
+          "web_search": "Веб-поиск Duck.ai"
+        }
+      }
+    }
+  }
+}
