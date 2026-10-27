@@ -1,0 +1,58 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Duck.ai",
+        "description": "What to set up? These are independent setups.",
+        "menu_options": {
+          "tools": "Tool calling (web_search for other agents)",
+          "agent": "Standalone conversation agent"
+        }
+      },
+      "bridge": {
+        "title": "Duck.ai Bridge",
+        "description": "Address of the bridge (add-on or Docker) used to load models.",
+        "data": {
+          "url": "Bridge URL (IP:port)"
+        }
+      },
+      "tools_settings": {
+        "title": "Tool calling: model",
+        "description": "The “Duck.ai Web Search” LLM API becomes selectable in other agents (OpenAI, Google, Ollama…).",
+        "data": {
+          "model": "Model"
+        }
+      },
+      "agent_settings": {
+        "title": "Conversation agent",
+        "description": "Requests go directly to Duck.ai.",
+        "data": {
+          "name": "Name",
+          "model": "Model",
+          "system_prompt": "System prompt",
+          "web_search": "Duck.ai web search"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Duck.ai bridge",
+      "no_models": "The bridge returned no available models",
+      "invalid_model": "Selected model is unavailable"
+    },
+    "abort": {
+      "already_configured": "Tool calling is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Duck.ai settings",
+        "data": {
+          "model": "Model",
+          "system_prompt": "System prompt",
+          "web_search": "Duck.ai web search"
+        }
+      }
+    }
+  }
+}
