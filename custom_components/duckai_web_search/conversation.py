@@ -1,64 +1,98 @@
-"""Duck.ai conversation agent backed by the local Node.js bridge."""
+"""Duck.ai conversation agent entity (forwarded platform)."""
 from __future__ import annotations
 
-import asyncio
 import logging
-import uuid
 
-import aiohttp
 from homeassistant.components import conversation
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 from homeassistant.const import MATCH_ALL
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import intent
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONF_MODEL, CONF_URL, CONF_PROMPT, DEFAULT_PROMPT
+from .bridge import async_post
+from .const import (
+    CONF_MODEL,
+    CONF_PROMPT,
+    CONF_URL,
+    CONF_WEB_SEARCH,
+    DEFAULT_PROMPT,
+    DOMAIN,
+    MAX_TURNS,
+)
 
 _LOGGER = logging.getLogger(__name__)
-MAX_TURNS = 12
 
 
-class DuckConversationAgent(conversation.AbstractConversationAgent):
-    """Conversation agent that forwards user messages to Duck.ai."""
+async def async_setup_entry(
+    hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
+    async_add_entities([DuckConversationEntity(config_entry)])
 
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
-        self.hass = hass
+
+class DuckConversationEntity(conversation.ConversationEntity):
+    """Conversation agent that forwards the dialog to Duck.ai via the bridge."""
+
+    _attr_has_entity_name = True
+    _attr_name = None
+    _attr_supports_streaming = False
+
+    def __init__(self, entry: ConfigEntry) -> None:
         self.entry = entry
-        self._histories: dict[str, list[dict[str, str]]] = {}
+        self._attr_unique_id = entry.entry_id
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=entry.title,
+            manufacturer="DuckDuckGo",
+            model="Duck.ai",
+            entry_type=DeviceEntryType.SERVICE,
+        )
 
     @property
     def supported_languages(self) -> str:
         return MATCH_ALL
 
-    async def async_process(self, user_input: conversation.ConversationInput) -> conversation.ConversationResult:
-        conversation_id = user_input.conversation_id or uuid.uuid4().hex
-        history = self._histories.get(conversation_id, [])
-        messages = [*history[-MAX_TURNS * 2:], {"role": "user", "content": user_input.text}]
+    async def _async_handle_message(
+        self, user_input: conversation.ConversationInput, chat_log: conversation.ChatLog
+    ) -> conversation.ConversationResult:
+        # chat_log already contains the current user message and prior turns
+        # (history is managed by Home Assistant per conversation_id).
+        messages = [
+            {"role": c.role, "content": c.content}
+            for c in chat_log.content
+            if c.role in ("user", "assistant") and c.content
+        ][-(MAX_TURNS * 2 + 1):]
+
+        data, options = self.entry.data, self.entry.options
         response = intent.IntentResponse(language=user_input.language)
         try:
-            session = async_get_clientsession(self.hass)
-            async with session.post(
-                self.entry.data[CONF_URL].rstrip("/") + "/chat",
-                json={
-                    "model": self.entry.options.get(CONF_MODEL, self.entry.data[CONF_MODEL]),
-                    "system_prompt": self.entry.options.get(CONF_PROMPT, DEFAULT_PROMPT),
+            payload = await async_post(
+                self.hass,
+                data[CONF_URL],
+                "/chat",
+                {
+                    "model": options.get(CONF_MODEL, data[CONF_MODEL]),
+                    "system_prompt": options.get(CONF_PROMPT, DEFAULT_PROMPT),
                     "messages": messages,
-                    "web_search": False,
+                    "web_search": bool(options.get(CONF_WEB_SEARCH, False)),
                 },
-                timeout=aiohttp.ClientTimeout(total=120),
-            ) as http_response:
-                payload = await http_response.json()
-                if http_response.status != 200:
-                    raise RuntimeError(f"Bridge HTTP {http_response.status}: {payload.get('error', 'Unknown error')}")
-            answer = payload.get("answer", "")
+            )
+            answer = payload.get("answer")
             if not isinstance(answer, str) or not answer.strip():
-                raise RuntimeError("Duck.ai returned an empty answer")
-            response.async_set_speech(answer)
-            self._histories[conversation_id] = [*messages, {"role": "assistant", "content": answer}][-MAX_TURNS * 2:]
-            if len(self._histories) > 100:
-                self._histories.pop(next(iter(self._histories)))
-        except (aiohttp.ClientError, asyncio.TimeoutError, RuntimeError, ValueError) as exc:
+                raise HomeAssistantError("Duck.ai returned an empty answer")
+        except HomeAssistantError as exc:
             _LOGGER.warning("Duck.ai conversation failed: %s", exc)
-            response.async_set_error(intent.IntentResponseErrorCode.UNKNOWN, "Duck.ai недоступен. Проверьте Bridge и журналы Home Assistant.")
-        return conversation.ConversationResult(response=response, conversation_id=conversation_id)
+            response.async_set_error(
+                intent.IntentResponseErrorCode.UNKNOWN,
+                "Duck.ai недоступен. Проверьте Bridge и журналы Home Assistant.",
+            )
+            return conversation.ConversationResult(
+                response=response, conversation_id=chat_log.conversation_id
+            )
+
+        chat_log.async_add_assistant_content_without_tools(
+            conversation.AssistantContent(agent_id=self.entity_id, content=answer)
+        )
+        return conversation.async_get_result_from_chat_log(user_input, chat_log)

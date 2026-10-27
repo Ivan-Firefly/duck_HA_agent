@@ -1,6 +1,6 @@
 {
   "domain": "duckai_web_search",
-  "name": "Duck.ai Web Search",
+  "name": "Duck.ai",
   "version": "2.2.0",
   "documentation": "https://github.com/golaso024/headless-duckapi",
   "requirements": [],
@@ -9,5 +9,6 @@
   ],
   "codeowners": [],
   "config_flow": true,
+  "integration_type": "service",
   "iot_class": "cloud_polling"
 }
