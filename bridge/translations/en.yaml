@@ -1,0 +1,9 @@
+configuration:
+  auto_restart_ha:
+    name: Restart Home Assistant after installing/updating the integration
+    description: >-
+      The integration files are copied to /config/custom_components when the app
+      starts. Home Assistant must restart once to load them. When enabled, the app
+      does it for you (only if files were installed or changed). Disable to restart manually.
+network:
+  8787/tcp: Duck.ai bridge API (no authentication, LAN only)
