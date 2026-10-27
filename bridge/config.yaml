@@ -1,0 +1,15 @@
+name: Duck.ai Bridge
+version: "2.2.0"
+slug: duckai_bridge
+description: Local HTTP bridge to Duck.ai for the Duck.ai Home Assistant integration
+url: https://github.com/Ivan-Firefly/duck_HA_agent
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: services
+boot: auto
+ports:
+  8787/tcp: 8787
+ports_description:
+  8787/tcp: Duck.ai bridge API (no authentication, LAN only)
