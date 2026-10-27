@@ -1,0 +1,57 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Duck.ai",
+        "description": "What to set up? These are independent setups.",
+        "data": {
+          "entry_type": "What to set up"
+        }
+      },
+      "bridge": {
+        "title": "Duck.ai Bridge",
+        "description": "Address of the Duck.ai Bridge app, used to load models.",
+        "data": {
+          "url": "Bridge URL (IP:port)"
+        }
+      },
+      "tools_settings": {
+        "title": "Tool calling: model",
+        "description": "The “Duck.ai Web Search” LLM API becomes selectable in other agents and in the Duck.ai agent’s control list.",
+        "data": {
+          "model": "Model"
+        }
+      },
+      "agent_settings": {
+        "title": "Conversation agent",
+        "description": "Requests go directly to Duck.ai (with internet access).",
+        "data": {
+          "name": "Name",
+          "model": "Model",
+          "system_prompt": "Instructions",
+          "llm_hass_api": "Select the level of control over Home Assistant"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Duck.ai bridge",
+      "no_models": "The bridge returned no available models",
+      "invalid_model": "Selected model is unavailable"
+    },
+    "abort": {
+      "already_configured": "Tool calling is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Duck.ai settings",
+        "data": {
+          "model": "Model",
+          "system_prompt": "Instructions",
+          "llm_hass_api": "Select the level of control over Home Assistant"
+        }
+      }
+    }
+  }
+}
