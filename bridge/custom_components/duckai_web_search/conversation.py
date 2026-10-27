@@ -19,7 +19,24 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import intent, llm
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from voluptuous_openapi import convert
+import voluptuous as vol
+
+try:  # installed through manifest requirements; not part of every HA core image
+    from voluptuous_openapi import convert
+except ImportError:  # pragma: no cover - minimal fallback
+    def convert(schema: Any, *, custom_serializer: Any = None) -> dict[str, Any]:
+        types = {str: "string", int: "integer", float: "number", bool: "boolean"}
+        props: dict[str, Any] = {}
+        required: list[str] = []
+        if isinstance(schema, vol.Schema):
+            schema = schema.schema
+        if isinstance(schema, dict):
+            for key, val in schema.items():
+                name = str(key.schema if isinstance(key, vol.Marker) else key)
+                props[name] = {"type": types.get(val, "string")} if val in types else {}
+                if isinstance(key, vol.Required):
+                    required.append(name)
+        return {"type": "object", "properties": props, "required": required}
 
 from .bridge import async_post
 from .const import (
