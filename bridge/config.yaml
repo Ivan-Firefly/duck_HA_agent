@@ -1,15 +1,25 @@
 name: Duck.ai Bridge
-version: "2.2.0"
+version: "2.3.0"
 slug: duckai_bridge
-description: Local HTTP bridge to Duck.ai for the Duck.ai Home Assistant integration
-url: https://github.com/Ivan-Firefly/duck_HA_agent
+description: Duck.ai bridge; also installs the Duck.ai integration into Home Assistant automatically
+url: https://github.com/golaso024/headless-duckapi
 arch:
   - amd64
   - aarch64
 init: false
 startup: services
 boot: auto
+hassio_api: true
+hassio_role: manager
+map:
+  - type: homeassistant_config
+    read_only: false
+    path: /homeassistant
 ports:
   8787/tcp: 8787
 ports_description:
   8787/tcp: Duck.ai bridge API (no authentication, LAN only)
+options:
+  auto_restart_ha: true
+schema:
+  auto_restart_ha: bool
