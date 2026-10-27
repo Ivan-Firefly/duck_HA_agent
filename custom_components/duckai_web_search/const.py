@@ -16,7 +16,7 @@ TYPE_AGENT = "agent"  # Standalone Duck.ai conversation agent
 UNIQUE_ID_TOOLS = "duckai_web_search"
 DEFAULT_AGENT_NAME = "Duck.ai"
 DEFAULT_TOOLS_NAME = "Duck.ai Web Search"
-DEFAULT_URL = "http://192.168.1.100:8787"
+DEFAULT_URL = "http://127.0.0.1:8787"  # add-on port is published on the host
 
 MAX_TURNS = 12
 
