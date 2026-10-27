@@ -1,9 +1,9 @@
 {
   "domain": "duckai_web_search",
   "name": "Duck.ai",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "documentation": "https://github.com/golaso024/headless-duckapi",
-  "requirements": [],
+  "requirements": ["voluptuous-openapi>=0.2.0"],
   "dependencies": [
     "conversation"
   ],
